@@ -266,20 +266,34 @@
                     cover: this.cover,
                     producer: this.producer,
                     musicList: this.musicList
-                }).then(() => {
-                    this.adding = false;
-                    this.$message({
-                        message: '添加成功！',
-                        type: 'success'
-                    });
-                    this.confirmButtonText = '添加成功';
+                }).then(response => {
+                    if(response.data === 'success') {
+                        this.adding = false;
+                        this.$message({
+                            message: '添加成功！',
+                            type: 'success'
+                        });
+                        this.confirmButtonText = '添加成功';
+                    } else if(response.data === 'Already Exist') {
+                        this.adding = false;
+                        this.$message({
+                            showClose: true,
+                            duration: 15000,
+                            message: '该专辑已存在！',
+                            type: 'error'
+                        });
+                        this.confirmButtonText = '确认添加';
+                        this.notEditable = false;
+                    }
                 }).catch(error => {
                     this.adding = false;
                     this.$message({
+                        showClose: true,
+                        duration: 15000,
                         message: '添加失败！' + error,
-                        type: 'success'
+                        type: 'error'
                     });
-                    this.confirmButtonText = '添加失败，重试';
+                    this.confirmButtonText = '确认添加';
                     this.notEditable = false;
                     console.log(error);
                 });
