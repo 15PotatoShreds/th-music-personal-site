@@ -93,7 +93,7 @@
         <div class="album-music-container">
             <el-table
                 :data="musicList"
-                style="width: 100%"
+                style="width: 800px"
             >
                 <el-table-column
                     label="SMWID"
@@ -130,7 +130,7 @@
                 </el-table-column>
                 <el-table-column
                     label="标题"
-                    width="250"
+                    width="300"
                 >
                     <template slot-scope="scope">
                         <el-input
@@ -141,52 +141,6 @@
                             :disabled="notEditable"
                             v-model="scope.row.title">
                         </el-input>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    label="演唱"
-                    width="300">
-                    <template slot-scope="scope">
-                        <el-select
-                            v-model="scope.row.vocal"
-                            multiple
-                            filterable
-                            allow-create
-                            default-first-option
-                            placeholder="演唱"
-                            :disabled="notEditable"
-                            style="display: block"
-                        >
-                            <el-option
-                                v-for="item in optionsVocal"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    label="原曲"
-                    width="400">
-                    <template slot-scope="scope">
-                        <el-select
-                            v-model="scope.row.originMusic"
-                            multiple
-                            filterable
-                            allow-create
-                            default-first-option
-                            :disabled="notEditable"
-                            placeholder="原曲"
-                            style="display: block"
-                        >
-                            <el-option
-                                v-for="item in optionsOrigin"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
                     </template>
                 </el-table-column>
                 <el-table-column align="right">
@@ -284,7 +238,7 @@
                         s: '/',
                         d: 'nm',
                         f: 'alname+circle+coverurl',
-                        p: 'discno+trackno+name+artist+ogmusic',
+                        p: 'discno+trackno+name',
                         a: id
                     }
                 }).then(response => {
@@ -297,9 +251,7 @@
                             musicID: v[0][1],
                             discNo: v[1][1],
                             trackNo: v[2][1],
-                            title: v[3][1],
-                            vocal: v[4][1].split("/"),
-                            originMusic: v[5][1].split("/")
+                            title: v[3][1]
                         });
                     });
                 });
@@ -308,21 +260,12 @@
                 this.confirmButtonText = '正在添加';
                 this.adding = true;
                 this.notEditable = true;
-                let musicList = [];
-                this.musicList.forEach(v=>{
-                    musicList.push({
-                        musicID: v['musicID'],
-                        discNo: v['discNo'],
-                        trackNo: v['trackNo'],
-                        title: v['title']
-                    });
-                });
                 axios.post('/apis/THMusic/admin/addAlbum.php', {
                     albumID: this.albumID,
                     albumName: this.albumName,
                     cover: this.cover,
                     producer: this.producer,
-                    musicList: musicList
+                    musicList: this.musicList
                 }).then(() => {
                     this.adding = false;
                     this.$message({
@@ -360,8 +303,6 @@
                 producer: [],
                 musicList: [],
                 optionsProducer: [],
-                optionsVocal: [],
-                optionsOrigin: [],
                 albumSearchResultList: [],
                 albumListLoading: false,
                 popoverState: false,
