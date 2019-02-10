@@ -7,8 +7,15 @@
 It is used exclusively to manage touhou music due to the addition of some special properties.
 
 距离能用还早着（咕
+## Database
 
-## Build Setup
+Use [mongoDB](https://www.mongodb.com/)
+
+## Web
+
+Based on [Vue.js](https://vuejs.org/)
+
+### Build Setup
 
 ``` bash
 # install dependencies
@@ -21,4 +28,12 @@ yarn start
 yarn run build
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## 进度
+
+后台实现最基本功能。
+
+能添加专辑，上传文件。
+
+不能编辑修改，条件检索，批量上传。
+
+一些细节需要改进（倒是不影响使用）。

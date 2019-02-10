@@ -1,170 +1,194 @@
 <template>
-    <div class="album-container">
-        <div class="album-info-container">
-            <div class="album-cover-container">
-                <img :src="cover" alt="" class="album-cover"/>
-            </div>
-
-            <div class="album-info-text-container">
-                <el-input
-                    v-model="albumID"
-                    placeholder="该专辑在THBWiki的SMWID"
-                    :disabled="notEditable"
-                    style="display: block">
-                </el-input>
-                <el-input
-                    v-model="albumName"
-                    placeholder="专辑名称"
-                    :disabled="notEditable"
-                    style="display: block">
-                </el-input>
-                <el-select
-                    v-model="producer"
-                    multiple
-                    filterable
-                    allow-create
-                    default-first-option
-                    placeholder="制作方"
-                    :disabled="notEditable"
-                    style="display: block"
-                >
-                    <el-option
-                        v-for="item in optionsProducer"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                    >
-                    </el-option>
-                </el-select>
-            </div>
-
-            <div class="album-info-button-container">
+    <el-container>
+        <el-header style="height: 50px; padding: 5px 0 0 5px;">
+            <router-link to="/">
                 <el-button
-                    type="success"
-                    @click="confirmAdd"
-                    :disabled="notEditable"
-                    class="album-info-button"
-                    :loading="adding"
-                    plain>
-                    {{confirmButtonText}}
+                        type="primary"
+                        plain
+                        icon="el-icon-arrow-left"
+                        :disabled="adding"
+                        class="button"
+                >
+                    返回主页面
                 </el-button>
-                <el-popover
+            </router-link>
+
+            <el-popover
                     placement="right"
                     width="500"
                     trigger="click"
                     v-model="popoverState"
-                >
-                    <el-table :data="albumSearchResultList" max-height="250" v-loading="albumListLoading">
-                        <el-table-column width="200" property="albumName" label="专辑名称"></el-table-column>
-                        <el-table-column width="200" property="producer" label="制作方"></el-table-column>
-                        <el-table-column width="80">
-                            <template slot-scope="scope">
-                                <el-button
+            >
+                <el-table :data="albumSearchResultList" max-height="250" v-loading="albumListLoading">
+                    <el-table-column width="200" property="albumName" label="专辑名称"></el-table-column>
+                    <el-table-column width="200" property="producer" label="制作方"></el-table-column>
+                    <el-table-column width="80">
+                        <template slot-scope="scope">
+                            <el-button
                                     size="mini"
                                     type="success"
                                     icon="el-icon-check"
                                     @click="autoFillByTHBWiki(scope.row.id)"
-                                >
-                                </el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <el-button
+                            >
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-button
                         type="primary"
                         slot="reference"
-                        class="album-info-button"
                         @click="searchAlbumByTHBWiki"
                         :disabled="notEditable"
-                        plain>
-                        THBWiki获取信息
-                    </el-button>
-                </el-popover>
-                <el-button
+                        icon="el-icon-search"
+                        class="button"
+                        plain
+                >
+                    从THBWiki获取
+                </el-button>
+            </el-popover>
+
+            <el-button
+                    type="success"
+                    @click="confirmAdd"
+                    :disabled="notEditable"
+                    :loading="adding"
+                    plain
+                    icon="el-icon-check"
+                    class="button"
+            >
+                {{confirmButtonText}}
+            </el-button>
+
+            <el-button
                     type="danger"
-                    class="album-info-button"
                     @click="clearAll"
                     :disabled="adding"
-                    plain>
-                    清空列表
-                </el-button>
-            </div>
-        </div>
-
-        <div class="album-music-container">
-            <el-table
-                :data="musicList"
-                style="width: 800px"
+                    icon="el-icon-delete"
+                    plain
+                    class="button"
             >
-                <el-table-column
-                    label="SMWID"
-                    width="120">
-                    <template slot-scope="scope">
-                        <el-input
-                            v-model="scope.row.musicID"
+                清空列表
+            </el-button>
+        </el-header>
+        <el-main style="padding: 0 0 0 10px">
+            <div class="album-info-container">
+                <div class="album-info-text-container">
+                    <el-input
+                            v-model="albumName"
+                            placeholder="专辑名称"
                             :disabled="notEditable"
-                            placeholder="SMWID">
-                        </el-input>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    label="碟号"
-                    width="80">
-                    <template slot-scope="scope">
-                        <el-input
-                            v-model="scope.row.discNo"
+                            style="display: block">
+                    </el-input>
+                    <el-select
+                            v-model="producer"
+                            multiple
+                            filterable
+                            allow-create
+                            default-first-option
+                            placeholder="制作方"
                             :disabled="notEditable"
-                            placeholder="碟号">
-                        </el-input>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    label="音轨"
-                    width="80">
-                    <template slot-scope="scope">
-                        <el-input
-                            v-model="scope.row.trackNo"
+                            style="display: block"
+                    >
+                        <el-option
+                                v-for="item in optionsProducer"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                        >
+                        </el-option>
+                    </el-select>
+                    <el-input
+                            v-model="albumID"
+                            placeholder="该专辑在THBWiki的SMWID"
                             :disabled="notEditable"
-                            placeholder="音轨">
-                        </el-input>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    label="标题"
-                    width="300"
+                            style="display: block">
+                    </el-input>
+                </div>
+
+                <div class="album-info-button-container">
+
+
+
+                </div>
+            </div>
+
+            <div class="album-music-container">
+                <el-table
+                        :data="musicList"
+                        style="width: 700px"
                 >
-                    <template slot-scope="scope">
-                        <el-input
-                            type="textarea"
-                            autosize
-                            resize="none"
-                            placeholder="标题"
-                            :disabled="notEditable"
-                            v-model="scope.row.title">
-                        </el-input>
-                    </template>
-                </el-table-column>
-                <el-table-column align="right">
-                    <template slot="header" slot-scope="scope">
-                        <el-button
-                            type="text"
-                            :disabled="notEditable"
-                            @click="addRow">
-                            添加一行
-                        </el-button>
-                    </template>
-                    <template slot-scope="scope">
-                        <el-button
-                            type="text"
-                            size="small"
-                            :disabled="notEditable"
-                            @click.native.prevent="deleteRow(scope.$index, musicList)">
-                            删除
-                        </el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </div>
-    </div>
+                    <el-table-column
+                            label="SMWID"
+                            width="120">
+                        <template slot-scope="scope">
+                            <el-input
+                                    v-model="scope.row.musicID"
+                                    :disabled="notEditable"
+                                    placeholder="SMWID">
+                            </el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            label="碟号"
+                            width="80">
+                        <template slot-scope="scope">
+                            <el-input
+                                    v-model="scope.row.discNo"
+                                    :disabled="notEditable"
+                                    placeholder="碟号">
+                            </el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            label="音轨"
+                            width="80">
+                        <template slot-scope="scope">
+                            <el-input
+                                    v-model="scope.row.trackNo"
+                                    :disabled="notEditable"
+                                    placeholder="音轨">
+                            </el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            label="标题"
+                            width="300"
+                    >
+                        <template slot-scope="scope">
+                            <el-input
+                                    type="textarea"
+                                    autosize
+                                    resize="none"
+                                    placeholder="标题"
+                                    :disabled="notEditable"
+                                    v-model="scope.row.title">
+                            </el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="right">
+                        <template slot="header" slot-scope="scope">
+                            <el-button
+                                    type="text"
+                                    :disabled="notEditable"
+                                    @click="addRow">
+                                添加一行
+                            </el-button>
+                        </template>
+                        <template slot-scope="scope">
+                            <el-button
+                                    type="text"
+                                    size="small"
+                                    :disabled="notEditable"
+                                    @click.native.prevent="deleteRow(scope.$index, musicList)">
+                                删除
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </el-main>
+    </el-container>
+
 </template>
 
 <script>
@@ -172,17 +196,11 @@
 
     export default {
         name: "AddAlbum",
-        props: {
-            index: {
-                type: Number,
-                required: true
-            }
-        },
         methods: {
             addRow() {
                 let newDiscNo = 1;
                 let newTrackNo = 1;
-                if(this.musicList.length > 0) {
+                if (this.musicList.length > 0) {
                     newDiscNo = this.musicList[this.musicList.length - 1]['discNo'];
                     newTrackNo = parseInt(this.musicList[this.musicList.length - 1]['trackNo']) + 1;
                 }
@@ -237,7 +255,7 @@
                         o: 1,
                         s: '/',
                         d: 'nm',
-                        f: 'alname+circle+coverurl',
+                        f: 'alname+circle',
                         p: 'discno+trackno+name',
                         a: id
                     }
@@ -245,8 +263,7 @@
                     this.musicList = [];
                     this.albumName = response.data[0][0][1];
                     this.producer = response.data[0][1][1].split("/");
-                    this.cover = response.data[0][2][1];
-                    response.data[1].forEach(v=>{
+                    response.data[1].forEach(v => {
                         this.musicList.push({
                             musicID: v[0][1],
                             discNo: v[1][1],
@@ -263,18 +280,17 @@
                 axios.post('/apis/THMusic/admin/addAlbum.php', {
                     albumID: this.albumID,
                     albumName: this.albumName,
-                    cover: this.cover,
                     producer: this.producer,
                     musicList: this.musicList
                 }).then(response => {
-                    if(response.data === 'success') {
+                    if (response.data === 'success') {
                         this.adding = false;
                         this.$message({
                             message: '添加成功！',
                             type: 'success'
                         });
                         this.confirmButtonText = '添加成功';
-                    } else if(response.data === 'Already Exist') {
+                    } else if (response.data === 'Already Exist') {
                         this.adding = false;
                         this.$message({
                             showClose: true,
@@ -304,7 +320,6 @@
                 this.notEditable = false;
                 this.albumID = '';
                 this.albumName = '';
-                this.cover = '';
                 this.producer = [];
                 this.musicList = [];
             }
@@ -313,7 +328,6 @@
             return {
                 albumID: '',
                 albumName: '',
-                cover: '',
                 producer: [],
                 musicList: [],
                 optionsProducer: [],
@@ -329,42 +343,20 @@
 </script>
 
 <style scoped>
-    .album-container {
-        margin: 10px 0;
-        max-width: 1590px;
+    .button {
+        width: 150px;
+        margin: 0 10px 0 0;
     }
-
     .album-info-container {
         padding-top: 5px;
         padding-bottom: 5px;
     }
 
-    .album-info-button-container {
-        display: inline-block;
-        vertical-align: top;
-        padding-left: 5px;
-    }
-
-    .album-info-button {
-        display: block;
-        width: 150px;
-    }
-
-    .album-cover-container {
-        display: inline-block;
-        left: 10px;
-        padding: 5px;
-    }
-
-    .album-cover {
-        width: 150px;
-    }
-
     .album-info-text-container {
         display: inline-block;
         vertical-align: top;
-        width: calc(100% - 330px);
+        width: 100%;
         min-width: 300px;
-        max-width: 500px;
+        max-width: 700px;
     }
 </style>
